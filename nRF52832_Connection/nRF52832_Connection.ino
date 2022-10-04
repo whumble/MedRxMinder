@@ -21,7 +21,7 @@ BLEDis  bledis;  // device information
 BLEUart bleuart; // uart over ble
 BLEBas  blebas;  // battery
 
-boolean BLEiscConnected = false;
+boolean BLEisConnected = false;
 
 void setup()
 {
@@ -116,7 +116,7 @@ void loop()
 
     // Convert integer value of "val" to string, since BLE only works with characters
     // val = 8 -> valStr = '8' = 56 (ASCII)
-    String valStr = String(Val);
+    String valStr = String(val);
 
     // Convert string into array of characters that wil be stored in "buf"
     // valStr = '8' -> buf = ['8']
