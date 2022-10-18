@@ -30,6 +30,9 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     var characteristicList = [String: CBCharacteristic]()
     var characteristicValue = [CBUUID: NSData]()
     var timer = Timer()
+    var medName: String = "Medication 1"
+    var medMass: String = "0g"
+    var ct: Int = 0
     
     let BLE_Service_UUID = CBUUID.init(string: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")
     let BLE_Characteristic_uuid_Rx = CBUUID.init(string: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
@@ -37,6 +40,85 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     @IBOutlet weak var connectStatusLbl: UILabel!
     @IBOutlet weak var dataLbl: UILabel!
+    
+    @IBOutlet weak var med1Name: UILabel!
+    @IBOutlet weak var med1Mass: UILabel!
+    @IBOutlet weak var med1Status: UILabel!
+    
+    @IBOutlet weak var med2Name: UILabel!
+    @IBOutlet weak var med2Mass: UILabel!
+    @IBOutlet weak var med2Status: UILabel!
+    
+    @IBOutlet weak var med3Name: UILabel!
+    @IBOutlet weak var med3Mass: UILabel!
+    @IBOutlet weak var med3Status: UILabel!
+    
+    @IBOutlet weak var med4Name: UILabel!
+    @IBOutlet weak var med4Mass: UILabel!
+    @IBOutlet weak var med4Status: UILabel!
+    
+    @IBOutlet weak var med5Name: UILabel!
+    @IBOutlet weak var med5Mass: UILabel!
+    @IBOutlet weak var med5Status: UILabel!
+    
+
+
+  
+    @IBAction func addNewMed(_ sender: UIButton) {
+        ct += 1
+        print("Count: ", ct)
+        let newMed = UIAlertController(title: "Add New Medication", message: "Fill in Info Below", preferredStyle: .alert)
+            newMed.addTextField { (textField) in
+                    textField.placeholder = "Medication Name"
+                }
+
+                newMed.addTextField { (textField) in
+                    textField.placeholder = "Medication Weight"
+                }
+
+                 newMed.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak newMed] (_) in
+                    if let textField = newMed?.textFields?[0], let userText = textField.text {
+                        print("User text: \(userText)")
+                        switch self.ct {
+                        case 1:
+                            self.med1Name.text = userText
+                        case 2:
+                            self.med2Name.text = userText
+                        case 3:
+                            self.med3Name.text = userText
+                        case 4:
+                            self.med4Name.text = userText
+                        case 5:
+                            self.med5Name.text = userText
+                        default:
+                            self.med1Name.text = "N/A"
+                        }
+                        
+                    }
+
+                    if let textField = newMed?.textFields?[1], let userText = textField.text {
+                        print("User text 2: \(userText)")
+                        switch self.ct {
+                        case 1:
+                            self.med1Mass.text = userText
+                        case 2:
+                            self.med2Mass.text = userText
+                        case 3:
+                            self.med3Mass.text = userText
+                        case 4:
+                            self.med4Mass.text = userText
+                        case 5:
+                            self.med5Mass.text = userText
+                        default:
+                            self.med1Mass.text = "N/A"
+                        }
+                    }
+                }))
+
+                self.present(newMed, animated: true, completion: nil)
+    }
+
+    
     
     // This function is called before the storyboard view is loaded onto the screen.
     // Runs only once.
@@ -54,6 +136,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     // This function is called right after the view is loaded onto the screen
     override func viewDidAppear(_ animated: Bool) {
+        
         super.viewDidAppear(animated)
         
         // Reset the peripheral connection with the app
@@ -61,7 +144,38 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             centralManager?.cancelPeripheralConnection(curPeripheral!)
         }
         print("View Cleared")
-    }
+//
+//        let newMed = UIAlertController(title: "Add New Medication", message: "Fill in Info Below", preferredStyle: .alert)
+//            newMed.addTextField { (textField) in
+//                    textField.placeholder = "Medication Name"
+//                }
+//
+//                newMed.addTextField { (textField) in
+//                    textField.placeholder = "Medication Weight"
+//                }
+//
+//                 newMed.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak newMed] (_) in
+//                    if let textField = newMed?.textFields?[0], let userText = textField.text {
+//                        print("User text: \(userText)")
+//                        self.med1Name.text = userText
+//                    }
+//
+//                    if let textField = newMed?.textFields?[1], let userText = textField.text {
+//                        print("User text 2: \(userText)")
+//                        self.med1Mass.text = userText
+//                    }
+//                }))
+//
+//                self.present(newMed, animated: true, completion: nil)
+//
+//
+//
+//
+//
+//
+        }
+    
+    
     
     // This function is called right before view disappears from screen
     override func viewWillDisappear(_ animated: Bool) {
@@ -101,6 +215,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             self.present(alertVC, animated: true, completion: nil)
         }
     }
+    
     
     // Start scanning for peripherals
     func startScan() {
@@ -332,3 +447,5 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     }
 }
+
+    
