@@ -30,8 +30,14 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     var characteristicList = [String: CBCharacteristic]()
     var characteristicValue = [CBUUID: NSData]()
     var timer = Timer()
-    var medName: String = "Medication 1"
-    var medMass: String = "0g"
+    var TrayWeight: Int = 0
+    var med1M: Int = 0
+    var med2M: Int = 0
+    var med3M: Int = 0
+    var med4M: Int = 0
+    var med5M: Int = 0
+    var medMasses: [Int] = [0,0,0,0,0]
+    var totMass: Int = 0
     var ct: Int = 0
     
     let BLE_Service_UUID = CBUUID.init(string: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")
@@ -61,65 +67,95 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     @IBOutlet weak var med5Mass: UILabel!
     @IBOutlet weak var med5Status: UILabel!
     
+    @IBOutlet weak var totMassLbl: UILabel!
+    
+    
+    
 
+    @IBAction func addTrayWt(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Add Tray Mass", message: "Fill in Info Below", preferredStyle: .alert)
+                alert.addTextField { (textField) in
+                    textField.placeholder = "Tray Mass"
+                }
+
+                alert.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak alert] (_) in
+                    guard let textField = alert?.textFields?[0], let userText = textField.text else { return }
+                    print("Tray Weight: \(userText)")
+                    let trayWeight = userText
+                }))
+
+                self.present(alert, animated: true, completion: nil)
+    }
+    
 
   
     @IBAction func addNewMed(_ sender: UIButton) {
         ct += 1
         print("Count: ", ct)
         let newMed = UIAlertController(title: "Add New Medication", message: "Fill in Info Below", preferredStyle: .alert)
-            newMed.addTextField { (textField) in
-                    textField.placeholder = "Medication Name"
+        newMed.addTextField { (textField) in
+            textField.placeholder = "Medication Name"
+        }
+        
+        newMed.addTextField { (textField) in
+            textField.placeholder = "Medication Mass"
+        }
+        
+        newMed.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak newMed] (_) in
+            if let textField = newMed?.textFields?[0], let userText = textField.text {
+                print("User text: \(userText)")
+                switch (self.ct % 5) {
+                case 1:
+                    self.med1Name.text = userText
+                case 2:
+                    self.med2Name.text = userText
+                case 3:
+                    self.med3Name.text = userText
+                case 4:
+                    self.med4Name.text = userText
+                case 0:
+                    self.med5Name.text = userText
+                default:
+                    self.med1Name.text = "N/A"
                 }
-
-                newMed.addTextField { (textField) in
-                    textField.placeholder = "Medication Weight"
+                
+            }
+            
+            if let textField = newMed?.textFields?[1], let userText = textField.text {
+                print("User text 2: \(userText)")
+                switch (self.ct % 5) {
+                case 1:
+                    self.med1Mass.text = userText
+                    let med1M = userText
+                case 2:
+                    self.med2Mass.text = userText
+                    let med2M = userText
+                case 3:
+                    self.med3Mass.text = userText
+                    let med3M = userText
+                case 4:
+                    self.med4Mass.text = userText
+                    let med4M = userText
+                case 0:
+                    self.med5Mass.text = userText
+                    let med5M = userText
+                default:
+                    self.med1Mass.text = "N/A"
                 }
-
-                 newMed.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak newMed] (_) in
-                    if let textField = newMed?.textFields?[0], let userText = textField.text {
-                        print("User text: \(userText)")
-                        switch self.ct {
-                        case 1:
-                            self.med1Name.text = userText
-                        case 2:
-                            self.med2Name.text = userText
-                        case 3:
-                            self.med3Name.text = userText
-                        case 4:
-                            self.med4Name.text = userText
-                        case 5:
-                            self.med5Name.text = userText
-                        default:
-                            self.med1Name.text = "N/A"
-                        }
-                        
-                    }
-
-                    if let textField = newMed?.textFields?[1], let userText = textField.text {
-                        print("User text 2: \(userText)")
-                        switch self.ct {
-                        case 1:
-                            self.med1Mass.text = userText
-                        case 2:
-                            self.med2Mass.text = userText
-                        case 3:
-                            self.med3Mass.text = userText
-                        case 4:
-                            self.med4Mass.text = userText
-                        case 5:
-                            self.med5Mass.text = userText
-                        default:
-                            self.med1Mass.text = "N/A"
-                        }
-                    }
-                }))
-
-                self.present(newMed, animated: true, completion: nil)
+            }
+        }))
+        
+        self.present(newMed, animated: true, completion: nil)
+        
+        if ct >= 5 {
+            // let medMasses = [med1M, med2M, med3M, med4M, med5M]
+            let totMass = med1M + med2M + med3M + med4M + med5M
+            print(totMass)
+            self.totMassLbl.text = "Total Mass: " + String(totMass) + "g"
+        }
+        
     }
 
-    
-    
     // This function is called before the storyboard view is loaded onto the screen.
     // Runs only once.
     override func viewDidLoad() {
@@ -144,35 +180,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             centralManager?.cancelPeripheralConnection(curPeripheral!)
         }
         print("View Cleared")
-//
-//        let newMed = UIAlertController(title: "Add New Medication", message: "Fill in Info Below", preferredStyle: .alert)
-//            newMed.addTextField { (textField) in
-//                    textField.placeholder = "Medication Name"
-//                }
-//
-//                newMed.addTextField { (textField) in
-//                    textField.placeholder = "Medication Weight"
-//                }
-//
-//                 newMed.addAction(UIAlertAction(title: "Submit", style: .default, handler: { [weak newMed] (_) in
-//                    if let textField = newMed?.textFields?[0], let userText = textField.text {
-//                        print("User text: \(userText)")
-//                        self.med1Name.text = userText
-//                    }
-//
-//                    if let textField = newMed?.textFields?[1], let userText = textField.text {
-//                        print("User text 2: \(userText)")
-//                        self.med1Mass.text = userText
-//                    }
-//                }))
-//
-//                self.present(newMed, animated: true, completion: nil)
-//
-//
-//
-//
-//
-//
         }
     
     
@@ -412,7 +419,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
                                             encoding: String.Encoding.utf8.rawValue)
         else { return }
         
-        dataLbl.text = "Value: " + (receivedString as String)
+        dataLbl.text = "Current Mass: " + (receivedString as String)
         
         NotificationCenter.default.post(name:NSNotification.Name(rawValue: "Notify"), object: self)
     }
